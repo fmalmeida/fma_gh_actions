@@ -21,14 +21,13 @@ jobs:
       - name: download github repo
         run: |
           git clone https://github.com/fmalmeida/bacannot.git
-          curl --silent "https://api.github.com/repos/fmalmeida/bacannot/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' > LATEST_RELEASE
 
       - name: Build docker images
         run: |
           cd bacannot/docker
-          docker build --no-cache -t fmalmeida/bacannot_base:$(cat LATEST_RELEASE) -f Dockerfile_main_tools .
+          docker build --no-cache -t fmalmeida/bacannot_base -f Dockerfile_main_tools .
 
       - name: Push Docker image to DockerHub (all)
         run: |
           echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-          docker push fmalmeida/bacannot_base:$(cat LATEST_RELEASE)
+          docker push fmalmeida/bacannot_base
