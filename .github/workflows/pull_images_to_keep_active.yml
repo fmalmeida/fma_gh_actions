@@ -19,7 +19,7 @@ jobs:
       - name: Pull Docker image from DockerHub (all)
         run: |
           echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-          docker pull fmalmeida/bacannot_main_tools
+          docker pull fmalmeida/bacannot:main_tools
           docker pull fmalmeida/bacannot:kofamscan
           docker pull fmalmeida/bacannot:renv
           docker pull fmalmeida/bacannot:jbrowse
