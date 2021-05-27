@@ -1,0 +1,41 @@
+name: Build bacannot images for version 2.0
+# this github action builds the base image of bacannot pipeline
+# the base image is the one that contains all the tools used in the main
+# workflow of the pipeline
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 1 */6 *'
+
+jobs:
+  push_dockerhub:
+    name: Push new Docker image to Docker Hub (release)
+    runs-on: ubuntu-latest
+    env:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
+    steps:
+      - name: Check out pipeline code
+        uses: actions/checkout@v2
+
+      - name: download github repo
+        run: |
+          git clone https://github.com/fmalmeida/bacannot.git
+          git checkout 2.0
+
+      - name: Build and push docker images
+        run: |
+          cd bacannot/docker
+          echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+          docker build -t fmalmeida/bacannot:v2.0    -f Dockerfile_bacannot  .
+          docker push fmalmeida/bacannot:v2.0
+          docker rmi -f fmalmeida/bacannot:v2.0 
+          docker build -t fmalmeida/bacannot:v2.0_kofamscan -f Dockerfile_kofamscan .
+          docker push fmalmeida/bacannot:v2.0_kofamscan
+          docker rmi -f fmalmeida/bacannot:v2.0_kofamscan
+          docker build -t fmalmeida/bacannot:v2.0_jbrowse   -f Dockerfile_jbrowse   .
+          docker push fmalmeida/bacannot:v2.0_jbrowse
+          docker rmi -f fmalmeida/bacannot:v2.0_jbrowse
+          docker build -t fmalmeida/bacannot:v2.0_renv      -f Dockerfile_renv      .
+          docker push fmalmeida/bacannot:v2.0_renv
+          docker rmi -f fmalmeida/bacannot:v2.0_renv
