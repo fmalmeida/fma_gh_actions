@@ -21,7 +21,7 @@ jobs:
       - name: download github repo
         run: |
           git clone https://github.com/fmalmeida/bacannot.git
-          git checkout 2.0
+          git checkout v2.0
 
       - name: Build and push docker images
         run: |
