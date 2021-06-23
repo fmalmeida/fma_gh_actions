@@ -1,0 +1,29 @@
+name: Build latest bacannot:server image (multi-arch)
+# this github action builds the base image of bacannot pipeline
+# the base image is the one that contains all the tools used in the main
+# workflow of the pipeline
+on:
+  workflow_dispatch:
+#  schedule:
+#    - cron: '0 0 1 */6 *'
+
+jobs:
+  push_dockerhub:
+    name: Push new Docker image to Docker Hub (release)
+    runs-on: ubuntu-latest
+    env:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
+    steps:
+      - name: Check out pipeline code
+        uses: actions/checkout@v2
+
+      - name: download github repo
+        run: |
+          git clone https://github.com/fmalmeida/bacannot.git
+      - name: Build and push docker images
+        run: |
+          cd bacannot/docker
+          echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+          docker buildx build --push --platform linux/arm/v7,linux/arm64/v8,linux/amd64 --tag fmalmeida/bacannot:server -f Dockerfile_server .
+          docker push fmalmeida/bacannot:server
