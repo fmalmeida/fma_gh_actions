@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  git-secret: lyvly/git-secret@0.1.0
+
 workflows:
   build-deploy:
     jobs:
@@ -18,7 +21,7 @@ jobs:
           cd bacannot
           cd docker
           export DOCKER_CLI_EXPERIMENTAL=enabled
-          echo "${{ secrets.DOCKERHUB_PASS }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+          echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
           docker buildx create --use
           docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
           docker buildx build --push --platform linux/amd64,linux/arm64,linux/arm/v7 --tag fmalmeida/bacannot:v2.3_renv -f Dockerfile_renv .
