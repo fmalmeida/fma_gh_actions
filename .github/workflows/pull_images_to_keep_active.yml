@@ -13,6 +13,14 @@ jobs:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
     steps:
+      
+      - id: keydb
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          owner: fmalmeida
+          repo: bacannot
+          excludes: prerelease, draft
+          
       - name: Check out pipeline code
         uses: actions/checkout@v2
 
@@ -21,8 +29,10 @@ jobs:
           echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
           docker pull fmalmeida/bacannot:main_tools
           docker rmi -f fmalmeida/bacannot:main_tools
-          docker pull fmalmeida/bacannot:renv
-          docker rmi -f fmalmeida/bacannot:renv
+          dpcler pull fmalmeida/bacannot:${{ steps.keydb.outputs.release }}
+          docker rmi -f fmalmeida/bacannot:${{ steps.keydb.outputs.release }}
+          docker pull fmalmeida/bacannot:${{ steps.keydb.outputs.release }}_renv
+          docker rmi -f fmalmeida/bacannot:${{ steps.keydb.outputs.release }}_renv
           docker pull fmalmeida/bacannot:jbrowse
           docker rmi -f fmalmeida/bacannot:jbrowse
           docker pull fmalmeida/bacannot:kofamscan
