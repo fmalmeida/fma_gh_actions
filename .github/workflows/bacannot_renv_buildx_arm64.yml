@@ -1,4 +1,4 @@
-name: (multi-arch) renv bacannot
+name: (arm64) renv bacannot
 # this github action builds the base image of bacannot pipeline
 # the base image is the one that contains all the tools used in the main
 # workflow of the pipeline
