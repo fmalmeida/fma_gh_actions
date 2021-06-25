@@ -21,13 +21,15 @@ jobs:
           owner: fmalmeida
           repo: bacannot
           excludes: prerelease, draft
+      
       - name: Check out pipeline code
         uses: actions/checkout@v2
 
       - name: download github repo
         run: |
           git clone https://github.com/fmalmeida/bacannot.git
-      - name: Build and push docker images
+      
+      - name: Build and push docker image
         run: |
           cd bacannot/docker
           echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
