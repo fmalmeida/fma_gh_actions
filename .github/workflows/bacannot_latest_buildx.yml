@@ -11,10 +11,12 @@ jobs:
   push_dockerhub:
     name: Push new Docker image to Docker Hub (release)
     runs-on: self-hosted
+    timeout-minutes: 600
     env:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
     steps:
+    
       - id: keydb
         uses: pozetroninc/github-action-get-latest-release@master
         with:
@@ -30,10 +32,12 @@ jobs:
           git clone https://github.com/fmalmeida/bacannot.git
       
       - name: Build and push docker image
+        id: buildx
         run: |
           cd bacannot/docker
           echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-          docker buildx create --platform linux/amd64,linux/arm64 --use
+          docker buildx create --platform linux/amd64,linux/arm64 --name my-buildx-gh-action --use
           docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
           docker buildx build --push --platform linux/amd64,linux/arm64 --tag fmalmeida/bacannot:${{ steps.keydb.outputs.release }} -f Dockerfile_bacannot .
+          docker buildx rm my-buildx-gh-action
 #          docker buildx build --push --platform linux/amd64,linux/arm64,linux/arm/v7 --tag fmalmeida/bacannot:${{ steps.keydb.outputs.release }} -f Dockerfile_bacannot .
