@@ -4,8 +4,8 @@ name: (multi-arch) server bacannot
 # workflow of the pipeline
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 0 1 */6 *'
+#  schedule:
+#    - cron: '0 0 1 */6 *'
 
 jobs:
   push_dockerhub:
