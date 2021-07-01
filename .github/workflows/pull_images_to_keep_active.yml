@@ -28,8 +28,8 @@ jobs:
         run: |
           echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
           docker pull fmalmeida/bacannot:main_tools
-          docker rmi -f fmalmeida/bacannot:main_tools
           docker pull fmalmeida/bacannot:${{ steps.keydb.outputs.release }}
+          docker rmi -f fmalmeida/bacannot:main_tools
           docker rmi -f fmalmeida/bacannot:${{ steps.keydb.outputs.release }}
           docker pull fmalmeida/bacannot:${{ steps.keydb.outputs.release }}_renv
           docker rmi -f fmalmeida/bacannot:${{ steps.keydb.outputs.release }}_renv
