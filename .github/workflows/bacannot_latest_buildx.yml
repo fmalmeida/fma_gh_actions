@@ -10,7 +10,7 @@ on:
 jobs:
   push_dockerhub:
     name: Push new Docker image to Docker Hub (release)
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 600
     env:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -34,10 +34,11 @@ jobs:
       - name: Build and push docker image
         id: buildx
         run: |
+          sudo rm -rf /usr/local/lib/android # will release about 10 GB if you don't need Android
+          sudo rm -rf /usr/share/dotnet # will release about 20GB if you don't need .NET
           cd bacannot/docker
           echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-          docker buildx create --platform linux/amd64,linux/arm64 --name my-buildx-gh-action --use
+          docker buildx create --platform linux/amd64 --name my-buildx-gh-action --use
           docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-          docker buildx build --push --platform linux/amd64,linux/arm64 --tag fmalmeida/bacannot:${{ steps.keydb.outputs.release }} -f Dockerfile_bacannot .
+          docker buildx build --push --platform linux/amd64 --tag fmalmeida/bacannot:${{ steps.keydb.outputs.release }} -f Dockerfile_bacannot .
           docker buildx rm my-buildx-gh-action
-#          docker buildx build --push --platform linux/amd64,linux/arm64,linux/arm/v7 --tag fmalmeida/bacannot:${{ steps.keydb.outputs.release }} -f Dockerfile_bacannot .
